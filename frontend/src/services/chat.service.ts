@@ -6,7 +6,7 @@ export interface ChatResponse {
   data: DestinationInfo | any | string;
 }
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const CACHE_KEY = 'journeycrafter_cache';
 
 /**

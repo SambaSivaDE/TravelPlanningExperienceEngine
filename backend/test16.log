@@ -1,9 +1,0 @@
-Error calling Vertex AI: ApiError: {"error":{"code":404,"message":"Publisher Model `projects/antigravitypromptwars/locations/us-central1/publishers/google/models/gemini-1.5-pro` was not found or your project does not have access to it. Please ensure you are using a valid model version. For more information, see: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions","status":"NOT_FOUND"}}
-    at throwErrorIfNotOK (/Users/harimanvitha/hari/Antigravity_project/TravelPlanningExperienceEngine/backend/node_modules/@google/genai/dist/node/index.cjs:13530:30)
-    at processTicksAndRejections (node:internal/process/task_queues:104:5)
-    at async /Users/harimanvitha/hari/Antigravity_project/TravelPlanningExperienceEngine/backend/node_modules/@google/genai/dist/node/index.cjs:13230:13
-    at async Models.generateContent (/Users/harimanvitha/hari/Antigravity_project/TravelPlanningExperienceEngine/backend/node_modules/@google/genai/dist/node/index.cjs:14638:24)
-    at async extractIntentAndPlan (/Users/harimanvitha/hari/Antigravity_project/TravelPlanningExperienceEngine/backend/src/services/ai.service.ts:44:22) {
-  status: 404
-}
-Vertex Error: {"error":{"code":404,"message":"Publisher Model `projects/antigravitypromptwars/locations/us-central1/publishers/google/models/gemini-1.5-pro` was not found or your project does not have access to it. Please ensure you are using a valid model version. For more information, see: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions","status":"NOT_FOUND"}}
