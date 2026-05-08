@@ -7,6 +7,13 @@ export interface DestinationInfo {
   lng: number;
   destination_name: string;
   rationale: string;
+  famous_places: string[];
+  budget: {
+    currency: string;
+    total: number;
+    breakdown: { category: string; amount: number }[];
+    notes: string;
+  };
 }
 
 function App() {
@@ -17,12 +24,16 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-slate-900 text-slate-100 font-sans">
-      <div className="w-full md:w-1/3 h-full relative z-10 shadow-2xl bg-slate-900/90 backdrop-blur-xl border-r border-slate-700/50 flex flex-col">
+    <div className="flex h-screen w-full overflow-hidden bg-slate-50 text-slate-900 font-sans">
+      <div className="w-[450px] min-w-[400px] h-full relative z-10 shadow-xl bg-white border-r border-slate-200 flex flex-col">
         <ChatPanel onDestinationUpdate={handleDestinationUpdate} />
       </div>
-      <div className="flex-1 h-full relative">
-        <MapPanel destination={destination} />
+      <div className="flex-1 relative overflow-hidden">
+        <MapPanel 
+          destination={destination} 
+          onEstimateBudget={() => (window as any).triggerBudget?.()}
+          onBookTickets={() => (window as any).triggerBooking?.()}
+        />
       </div>
     </div>
   );

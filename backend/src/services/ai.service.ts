@@ -1,4 +1,4 @@
-import { VertexAI, FunctionDeclaration, Type } from '@google-cloud/vertexai';
+import { VertexAI, FunctionDeclaration, FunctionDeclarationSchemaType } from '@google-cloud/vertexai';
 
 // Initialize Vertex AI
 const project = 'antigravitypromptwars';
@@ -8,7 +8,7 @@ const vertexAI = new VertexAI({ project, location });
 
 // We use the Gemini 1.5 Pro model
 const generativeModel = vertexAI.getGenerativeModel({
-  model: 'gemini-1.5-pro-001',
+  model: 'gemini-2.5-flash-lite',
   generationConfig: {
     temperature: 0.7,
   },
@@ -19,26 +19,69 @@ const updateMapFunctionDeclaration: FunctionDeclaration = {
   name: 'update_map',
   description: 'Update the map to fly to a specific global destination with cinematic 3D tiles based on the user thought.',
   parameters: {
-    type: Type.OBJECT,
+    type: FunctionDeclarationSchemaType.OBJECT,
     properties: {
       lat: {
-        type: Type.NUMBER,
+        type: FunctionDeclarationSchemaType.NUMBER,
         description: 'Latitude of the destination',
       },
       lng: {
-        type: Type.NUMBER,
+        type: FunctionDeclarationSchemaType.NUMBER,
         description: 'Longitude of the destination',
       },
       destination_name: {
-        type: Type.STRING,
+        type: FunctionDeclarationSchemaType.STRING,
         description: 'The name of the destination',
       },
       rationale: {
-        type: Type.STRING,
-        description: 'A brief explanation of why this destination was chosen based on the user thought, forming a 3-day itinerary concept.',
+        type: FunctionDeclarationSchemaType.STRING,
+        description: 'A detailed 3-day itinerary formatted in Markdown with headers and bullet points. You MUST include specific names of places to visit and restaurants to eat at for each of the 3 days.',
+      },
+      famous_places: {
+        type: FunctionDeclarationSchemaType.ARRAY,
+        items: {
+          type: FunctionDeclarationSchemaType.STRING,
+        },
+        description: 'A list of 3-5 iconic landmarks or famous places in this destination.',
+      },
+      budget: {
+        type: FunctionDeclarationSchemaType.OBJECT,
+        properties: {
+          currency: { type: FunctionDeclarationSchemaType.STRING, description: 'USD, EUR, etc.' },
+          total: { type: FunctionDeclarationSchemaType.NUMBER },
+          breakdown: {
+            type: FunctionDeclarationSchemaType.ARRAY,
+            items: {
+              type: FunctionDeclarationSchemaType.OBJECT,
+              properties: {
+                category: { type: FunctionDeclarationSchemaType.STRING },
+                amount: { type: FunctionDeclarationSchemaType.NUMBER },
+              },
+              required: ['category', 'amount'],
+            },
+          },
+          notes: { type: FunctionDeclarationSchemaType.STRING },
+        },
+        required: ['currency', 'total', 'breakdown', 'notes'],
       },
     },
-    required: ['lat', 'lng', 'destination_name', 'rationale'],
+    required: ['lat', 'lng', 'destination_name', 'rationale', 'famous_places', 'budget'],
+  },
+};
+
+// Define the function call for booking tickets
+const bookTicketsFunctionDeclaration: FunctionDeclaration = {
+  name: 'book_tickets',
+  description: 'Triggered when the user explicitly asks for help booking tickets or making a reservation.',
+  parameters: {
+    type: FunctionDeclarationSchemaType.OBJECT,
+    properties: {
+      destination: {
+        type: FunctionDeclarationSchemaType.STRING,
+        description: 'The destination the user wants to book for.',
+      },
+    },
+    required: ['destination'],
   },
 };
 
@@ -47,7 +90,10 @@ export const extractIntentAndPlan = async (userThought: string) => {
     const chat = generativeModel.startChat({
       tools: [
         {
-          functionDeclarations: [updateMapFunctionDeclaration],
+          functionDeclarations: [
+            updateMapFunctionDeclaration, 
+            bookTicketsFunctionDeclaration,
+          ],
         },
       ],
     });
@@ -55,7 +101,14 @@ export const extractIntentAndPlan = async (userThought: string) => {
     const prompt = `You are a Travel Planning Experience Engine.
 The user has provided a thought: "${userThought}".
 Determine the best global destination that matches their thought.
-You MUST use the 'update_map' function to provide the destination coordinates, name, and a 3-day itinerary rationale.`;
+ALWAYS call the 'update_map' function if a destination is identified. 
+For 'update_map', you MUST provide:
+1. Coordinates (lat, lng)
+2. Destination name
+3. A detailed 3-Day itinerary in Markdown 'rationale'. You MUST use '### Day 1', '### Day 2', and '### Day 3' as headers. Include specific landmarks and restaurants for each day.
+4. A list of 3-5 'famous_places' (iconic landmarks)
+5. A comprehensive 'budget' breakdown for the 3rd-day trip.
+IMPORTANT: Do not skip the day-by-day headers.`;
 
     const result = await chat.sendMessage(prompt);
     const response = result.response;
@@ -69,6 +122,12 @@ You MUST use the 'update_map' function to provide the destination coordinates, n
       if (functionCall?.name === 'update_map') {
         return {
           type: 'function_call',
+          data: functionCall.args,
+        };
+      }
+      if (functionCall?.name === 'book_tickets') {
+        return {
+          type: 'booking_call',
           data: functionCall.args,
         };
       }

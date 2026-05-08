@@ -50,9 +50,10 @@ describe('AI Service', () => {
     expect(result.type).toBe('function_call');
     expect(result.data).toBeDefined();
     if (result.type === 'function_call') {
-      expect(result.data.lat).toBe(48.8584);
-      expect(result.data.lng).toBe(2.2945);
-      expect(result.data.destination_name).toBe('Eiffel Tower, Paris');
+      const data = result.data as any;
+      expect(data.lat).toBe(48.8584);
+      expect(data.lng).toBe(2.2945);
+      expect(data.destination_name).toBe('Eiffel Tower, Paris');
     }
   });
 });
