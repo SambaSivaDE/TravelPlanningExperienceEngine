@@ -1,0 +1,14 @@
+# Firebase App Hosting Configuration
+kind: "AppHostingYaml"
+apiVersion: "v1beta1"
+
+# The path to your frontend code
+appRoot: "frontend"
+
+# Environmental variables for the backend (Cloud Run)
+# Note: It's better to set these in the Firebase Console UI as well
+env:
+  - variable: GOOGLE_CLOUD_PROJECT
+    value: "antigravitypromptwars"
+  - variable: GOOGLE_CLOUD_LOCATION
+    value: "us-central1"
