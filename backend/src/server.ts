@@ -13,6 +13,10 @@ app.use(express.json());
 
 app.use('/api/chat', chatRoutes);
 
+app.get('/', (req, res) => {
+  res.status(200).send('JourneyCrafter Travel Portal API is Live! Use /api/chat for requests.');
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
