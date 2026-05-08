@@ -12,3 +12,5 @@ env:
     value: "antigravitypromptwars"
   - variable: GOOGLE_CLOUD_LOCATION
     value: "us-central1"
+  - variable: VITE_API_BASE_URL
+    value: "https://journeycrafter-backend-752782978270.us-central1.run.app"
