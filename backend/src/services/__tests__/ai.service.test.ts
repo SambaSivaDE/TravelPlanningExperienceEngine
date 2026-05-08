@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { AIService } from '../ai.service';
 
 describe('AIService', () => {
