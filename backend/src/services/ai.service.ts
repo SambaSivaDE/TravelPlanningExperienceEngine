@@ -1,8 +1,8 @@
 import { VertexAI, FunctionDeclaration, FunctionDeclarationSchemaType } from '@google-cloud/vertexai';
 
 // Initialize Vertex AI
-const project = 'antigravitypromptwars';
-const location = 'us-central1';
+const project = process.env.GOOGLE_CLOUD_PROJECT || 'antigravitypromptwars';
+const location = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
 
 const vertexAI = new VertexAI({ project, location });
 
